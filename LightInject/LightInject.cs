@@ -551,6 +551,12 @@ namespace LightInject
         /// <param name="predicate">A function delegate that determines if the given service can be post-processed.</param>
         /// <param name="processor">An action delegate that exposes the created service instance.</param>
         void Initialize(Func<ServiceRegistration, bool> predicate, Action<IServiceFactory, object> processor);
+
+        /// <summary>
+        /// Sets the default lifetime for types registered without an explicit lifetime. Will only affect new registrations (after this call).
+        /// </summary>
+        /// <typeparam name="T">The default lifetime type</typeparam>
+        void SetDefaultLifetime<T>() where T : ILifetime, new();
     }
 
     /// <summary>
@@ -2206,6 +2212,10 @@ namespace LightInject
             ImmutableHashTree<Type, Func<object[], object, object>>.Empty;
 
         private bool isLocked;
+        private Type defaultLifetimeType;
+
+        private ILifetime DefaultLifetime => (ILifetime) (defaultLifetimeType != null ? Activator.CreateInstance(defaultLifetimeType) : null);
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServiceContainer"/> class.
@@ -2241,6 +2251,12 @@ namespace LightInject
         {
             this.options = options;
         }
+
+        /// <summary>
+        /// Sets the default lifetime for types registered without an explicit lifetime. Will only affect new registrations (after this call).
+        /// </summary>
+        /// <typeparam name="T">The default lifetime type</typeparam>
+        public void SetDefaultLifetime<T>() where T : ILifetime, new() => defaultLifetimeType = typeof(T);
 
         /// <summary>
         /// Gets or sets the <see cref="IScopeManagerProvider"/> that is responsible
@@ -2428,7 +2444,7 @@ namespace LightInject
         /// </remarks>
         public void RegisterAssembly(Assembly assembly, Func<Type, Type, bool> shouldRegister)
         {
-            AssemblyScanner.Scan(assembly, this, () => null, shouldRegister);
+            AssemblyScanner.Scan(assembly, this, () => DefaultLifetime, shouldRegister);
         }
 
         /// <summary>
@@ -4374,7 +4390,7 @@ namespace LightInject
             Ensure.IsNotNull(serviceType, "serviceType");
             Ensure.IsNotNull(implementingType, "implementingType");
             Ensure.IsNotNull(serviceName, "serviceName");
-            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ImplementingType = implementingType, ServiceName = serviceName, Lifetime = lifetime };
+            var serviceRegistration = new ServiceRegistration { ServiceType = serviceType, ImplementingType = implementingType, ServiceName = serviceName, Lifetime = lifetime ?? DefaultLifetime };
             Register(serviceRegistration);
         }
 
@@ -4498,7 +4514,7 @@ namespace LightInject
         private void RegisterServiceFromLambdaExpression<TService>(
             LambdaExpression factory, ILifetime lifetime, string serviceName)
         {
-            var serviceRegistration = new ServiceRegistration { ServiceType = typeof(TService), FactoryExpression = factory, ServiceName = serviceName, Lifetime = lifetime };
+            var serviceRegistration = new ServiceRegistration { ServiceType = typeof(TService), FactoryExpression = factory, ServiceName = serviceName, Lifetime = lifetime ?? DefaultLifetime };
             Register(serviceRegistration);
         }
 #endif
@@ -4515,7 +4531,7 @@ namespace LightInject
                 ServiceType = serviceType,
                 FactoryDelegate = factoryDelegate,
                 ServiceName = serviceName,
-                Lifetime = lifetime
+                Lifetime = lifetime ?? DefaultLifetime
             };
             Register(serviceRegistration);
         }

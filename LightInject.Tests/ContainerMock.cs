@@ -247,6 +247,11 @@
             throw new NotImplementedException();
         }
 
+        public void SetDefaultLifetime<T>() where T : ILifetime, new()
+        {
+            throw new NotImplementedException();
+        }
+
         public Scope BeginScope()
         {
             throw new NotImplementedException();

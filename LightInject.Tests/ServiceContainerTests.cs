@@ -1509,6 +1509,53 @@ namespace LightInject.Tests
         }
      
         #endregion
+
+        [TestMethod]
+        public void Register_uses_DefaultLifetime_if_set()
+        {
+            var container = CreateContainer();
+            container.Register<IFoo, Foo>();
+            container.SetDefaultLifetime<PerContainerLifetime>();
+            container.Register<IBar, Bar>();
+
+            var foo1 = container.GetInstance<IFoo>();
+            var foo2 = container.GetInstance<IFoo>();
+            var bar1 = container.GetInstance<IBar>();
+            var bar2 = container.GetInstance<IBar>();
+            
+            Assert.AreNotSame(foo1, foo2);
+            Assert.AreSame(bar1, bar2);
+        }
+
+        [TestMethod]
+        public void RegisterAssembly_uses_DefaultLifetime_if_set()
+        {
+            var container = CreateContainer();
+            container.SetDefaultLifetime<PerContainerLifetime>();
+            container.RegisterAssembly(typeof(Foo).Assembly);
+
+            var foo1 = container.GetInstance<IFoo>();
+            var foo2 = container.GetInstance<IFoo>();
+            
+            Assert.AreSame(foo1, foo2);
+        }
+
+        [TestMethod]
+        public void Register_with_FactoryMethod_uses_DefaultLifetime_if_set()
+        {
+            var container = CreateContainer();
+            container.Register<IFoo>(_ => new Foo());
+            container.SetDefaultLifetime<PerContainerLifetime>();
+            container.Register<IBar>(_ => new Bar());
+            
+            var foo1 = container.GetInstance<IFoo>();
+            var foo2 = container.GetInstance<IFoo>();
+            var bar1 = container.GetInstance<IBar>();
+            var bar2 = container.GetInstance<IBar>();
+
+            Assert.AreNotSame(foo1, foo2);
+            Assert.AreSame(bar1, bar2);
+        }
     }
 
     public interface IFooFactoryWithArgument

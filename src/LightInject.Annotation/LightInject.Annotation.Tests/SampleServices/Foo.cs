@@ -158,25 +158,25 @@ namespace LightInject.SampleLibrary
         public IBar Bar { get; private set; }
     }
 
-    //public class FooWithAnnotatedDependency : IFoo
-    //{
-    //    public FooWithAnnotatedDependency([Inject]IBar bar)
-    //    {
-    //        Bar = bar;
-    //    }
+    public class FooWithAnnotatedDependency : IFoo
+    {
+        public FooWithAnnotatedDependency([Inject]IBar bar)
+        {
+            Bar = bar;
+        }
 
-    //    public IBar Bar { get; private set; }
-    //}
+        public IBar Bar { get; private set; }
+    }
 
-    //public class FooWithNamedAnnotatedDependency : IFoo
-    //{
-    //    public FooWithNamedAnnotatedDependency([Inject("AnotherBar")]IBar bar)
-    //    {
-    //        Bar = bar;
-    //    }
+    public class FooWithNamedAnnotatedDependency : IFoo
+    {
+        public FooWithNamedAnnotatedDependency([Inject("AnotherBar")]IBar bar)
+        {
+            Bar = bar;
+        }
 
-    //    public IBar Bar { get; private set; }
-    //}
+        public IBar Bar { get; private set; }
+    }
 
     public class FooWithEnumerableIFooDependency : IFoo
     {
@@ -674,7 +674,7 @@ namespace LightInject.SampleLibrary
         public string StringValue { get; set; }
         public int IntValue { get; set; }
 
-        public FooWithMultipleParameterizedConstructors(int intValue)
+        public FooWithMultipleParameterizedConstructors([Inject("SomeValue")]int intValue)
         {
             IntValue = intValue;
         }
@@ -699,17 +699,17 @@ namespace LightInject.SampleLibrary
 
     public class FooWithInheritedProperyDepenency : FooWithProperyDependency {}
 
-    //public class FooWithAnnotatedProperyDependency : IFoo
-    //{
-    //    [Inject]
-    //    public IBar Bar { get; set; }
-    //}
+    public class FooWithAnnotatedProperyDependency : IFoo
+    {
+        [Inject]
+        public IBar Bar { get; set; }
+    }
 
-    //public class FooWithNamedAnnotatedProperyDependency : IFoo
-    //{
-    //    [Inject("AnotherBar")]
-    //    public IBar Bar { get; set; }
-    //}
+    public class FooWithNamedAnnotatedProperyDependency : IFoo
+    {
+        [Inject("AnotherBar")]
+        public IBar Bar { get; set; }
+    }
 
     public class FooWithFuncDependency : IFoo
     {

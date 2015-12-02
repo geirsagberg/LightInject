@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Specification;
+using Xunit;
 
 namespace LightInject.AspNet5.Tests
 {
@@ -11,5 +12,5 @@ namespace LightInject.AspNet5.Tests
             var container = new ServiceContainer();
             return container.GetPopulatedServiceProvider(serviceCollection);
         }
-    }
+    } 
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +21,7 @@ namespace LightInject.AspNet5
 
         public static IServiceProvider GetPopulatedServiceProvider(this IServiceContainer container, IServiceCollection services)
         {
+            //container.RegisterFallback((type, name) => true, request => Activator.CreateInstance(request.ServiceType));
             container.Populate(services);
             var serviceProvider = new LightInjectServiceProvider(container);
             container.RegisterInstance<IServiceProvider>(serviceProvider);
@@ -37,7 +37,7 @@ namespace LightInject.AspNet5
                 if (descriptor.ImplementationType != null) {
                     serviceContainer.Register(descriptor.ServiceType, descriptor.ImplementationType, lifetime);
                 } else if (descriptor.ImplementationFactory != null) {
-                    Expression<Func<IServiceFactory, object>> expression = factory => descriptor.ImplementationFactory(factory.GetInstance<IServiceProvider>());
+                    Func<IServiceFactory, object> expression = factory => descriptor.ImplementationFactory(factory.GetInstance<IServiceProvider>());
 
                     serviceContainer.Register(new ServiceRegistration {
                         ServiceType = descriptor.ServiceType,

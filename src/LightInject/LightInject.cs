@@ -5892,6 +5892,20 @@ namespace LightInject
             }
         }
 
+        public enum ScopeOptions
+        {
+            Default,
+            RequiresNew
+        }
+
+        public Scope BeginScope(ScopeOptions options)
+        {
+            lock (syncRoot) {
+                var scope = new Scope(this, currentScope);
+                return scope;
+            }
+        }
+
         /// <summary>
         /// Ends the given <paramref name="scope"/> and updates the <see cref="CurrentScope"/> property.
         /// </summary>
